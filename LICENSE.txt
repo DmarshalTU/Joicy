@@ -1,0 +1,44 @@
+Joicy License
+
+Copyright (c) 2025 Denis Tu
+
+This software is dual-licensed:
+
+1. NON-COMMERCIAL USE LICENSE
+   
+   For non-commercial use, this software is licensed under the following terms:
+   
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to use,
+   copy, modify, merge, publish, and distribute the Software for non-commercial
+   purposes, subject to the following conditions:
+   
+   The above copyright notice and this permission notice shall be included in all
+   copies or substantial portions of the Software.
+   
+   Attribution Requirement:
+   - You must include the copyright notice and this license in all copies
+   - You must give appropriate credit to Denis Tu and provide a link to the
+     original repository: https://github.com/DmarshalTU/Joicy
+   - You must indicate if changes were made
+   
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+
+2. COMMERCIAL USE LICENSE
+   
+   Commercial use of this software requires a separate commercial license.
+   Commercial use includes, but is not limited to:
+   - Using the software in a commercial product or service
+   - Selling the software or a derivative work
+   - Using the software to provide a paid service (SaaS)
+   - Using the software in a for-profit organization
+   
+   For commercial licensing inquiries, please contact:
+   Email: dmarshaltu@gmail.com
+   Repository: https://github.com/DmarshalTU/Joicy

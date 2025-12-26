@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 authors = ["Denis Tu"]
 description = "Team memory bank system for AI-assisted development"
-license = "MIT OR Apache-2.0"
+license-file = "LICENSE.txt"
 repository = "https://github.com/denistu/joicy"
 
 [lib]
