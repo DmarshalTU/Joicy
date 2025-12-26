@@ -3,6 +3,9 @@
 **Creator:** Denis Tu  
 **Date:** December 2025
 
+<img width="490" height="487" alt="image" src="https://github.com/user-attachments/assets/d697cd49-7111-40f6-9aca-743f050bc13e" />
+
+
 ## Overview
 
 Joicy is a team memory bank system that captures, stores, and shares developer knowledge across teams. It enables AI agents to learn from team history, prevent repeated bugs, and provide context-aware assistance. The system works in both SaaS and air-gapped environments, supporting individual developers, teams, and entire organizations.
