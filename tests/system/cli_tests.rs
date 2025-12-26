@@ -1,6 +1,5 @@
 //! System tests for CLI
 
-use assert_matches::assert_matches;
 use std::process::Command;
 
 #[test]

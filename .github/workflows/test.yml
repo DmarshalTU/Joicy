@@ -38,5 +38,5 @@ jobs:
         with:
           toolchain: stable
       - name: Run system tests
-        run: cargo test --test system -- --ignored
+        run: cargo test --test system_test -- --ignored
 
