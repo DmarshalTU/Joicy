@@ -108,8 +108,11 @@ impl AppConfig {
             .map_err(|e| Error::Config(e.to_string()))
     }
 
+}
+
+impl Default for AppConfig {
     /// Get default configuration
-    pub fn default() -> Self {
+    fn default() -> Self {
         Self {
             memory: MemoryConfig {
                 backend: "sqlite".to_string(),
