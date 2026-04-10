@@ -24,10 +24,6 @@ pub enum Error {
     #[error("MCP error: {0}")]
     Mcp(String),
 
-    /// Sync errors
-    #[error("Sync error: {0}")]
-    Sync(String),
-
     /// IO errors
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),

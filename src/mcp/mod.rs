@@ -1,19 +1,15 @@
-//! MCP (Model Context Protocol) server module
+//! Model Context Protocol (stdio server for IDEs).
 
-#[cfg(feature = "mcp")]
-mod server;
-#[cfg(feature = "mcp")]
-mod tools;
+#[cfg(all(feature = "mcp", feature = "storage-sqlite"))]
+mod serve;
 
-#[cfg(feature = "mcp")]
-pub use server::*;
-#[cfg(feature = "mcp")]
-pub use tools::*;
+#[cfg(all(feature = "mcp", feature = "storage-sqlite"))]
+pub use serve::serve_stdio;
 
-#[cfg(not(feature = "mcp"))]
-pub fn start_server() -> crate::error::Result<()> {
+/// When MCP or SQLite is disabled at compile time.
+#[cfg(not(all(feature = "mcp", feature = "storage-sqlite")))]
+pub fn serve_stdio() -> crate::error::Result<()> {
     Err(crate::error::Error::Mcp(
-        "MCP feature is not enabled".to_string(),
+        "`joicy mcp serve` requires `mcp` and `storage-sqlite` (enabled in default features).".into(),
     ))
 }
-

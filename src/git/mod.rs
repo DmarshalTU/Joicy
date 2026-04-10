@@ -1,19 +1,20 @@
 //! Git integration module
 
 #[cfg(feature = "git")]
-mod hooks;
+mod capture;
 #[cfg(feature = "git")]
-mod repository;
+mod hooks;
 
 #[cfg(feature = "git")]
-pub use hooks::*;
+pub use capture::{
+    capture_head_context, capture_head_for_pipeline, git_workdir, CommitMeta,
+};
 #[cfg(feature = "git")]
-pub use repository::*;
+pub use hooks::install_post_commit_hook;
 
 #[cfg(not(feature = "git"))]
-pub fn install_hooks() -> crate::error::Result<()> {
+pub fn install_post_commit_hook(_repo_root: &std::path::Path) -> crate::error::Result<()> {
     Err(crate::error::Error::Git(
         "Git feature is not enabled".to_string(),
     ))
 }
-

@@ -64,12 +64,22 @@
 
 ### Key Features
 
-- 🧠 **Team Memory Bank**: Vector database storing code patterns, bug fixes, and solutions
-- 🔄 **Local-First Architecture**: Fast local memory with optional central sync
-- 🤖 **MCP Integration**: Works with Cline, Copilot, and other AI agents
-- 🔍 **Intelligent Search**: Semantic search across team knowledge
+- 🧠 **Team Memory Bank**: Local knowledge store (default: SQLite + FTS5); vector backends are optional / future
+- 🔄 **Local-First Architecture**: Fast local memory; optional central sync is planned, not shipped in the default build
+- 🤖 **MCP Integration**: Cursor and other MCP clients can search, store, read changelog, and write vault notes
+- 🔍 **Search**: Full-text search over stored snippets and captured git context (not embedding-based semantic search yet)
 - 🔒 **Air-Gapped Support**: Works in isolated environments
-- 📊 **Multi-Tier Caching**: Hot/Warm/Cold storage for optimal performance
+- 📊 **Multi-Tier Caching**: Planned hot/warm/cold layers (not required for the local POC)
+
+### Local developer POC (current)
+
+What works **today** on a single machine:
+
+- **CLI**: `init`, `add`, `search`, `status`, `clean`, `export`, `vault`, `changelog`, `hooks`, `automation`, `mcp`, and a **placeholder** `sync` (prints that team sync is not implemented)
+- **Storage**: SQLite + **FTS5** at `.joicy/memory/` (git-captured paths are replaced on re-ingest to avoid duplicate FTS rows)
+- **Git**: `joicy hooks install` — post-commit runs four steps: SQLite capture → Obsidian vault export → `CHANGELOG.md` → ticket stub under `.joicy/vault/.../tickets/`
+- **Obsidian**: Markdown under `.joicy/vault/`; optional shared vault via `[vault]` in `.joicy/joicy.toml` or `JOICY_VAULT_ROOT`
+- **MCP**: `memory_search`, `memory_store`, `memory_changelog`, `memory_vault_note` (use `file_stem` for stable note names and wikilink-friendly filenames). Set `JOICY_REPO_ROOT` if the server’s cwd is not the repo root
 
 ### Key Concepts
 
@@ -77,7 +87,7 @@
 - **Local Memory**: Per-developer memory bank for fast, personal context
 - **Central Memory**: Team/company-wide memory bank for shared knowledge
 - **MCP Server**: Model Context Protocol server that provides memory bank access to AI agents
-- **Sync Service**: Background service that synchronizes local memory with central memory
+- **Sync Service**: Planned background sync to a central memory bank (CLI `joicy sync` exists as a stub only)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -143,8 +153,8 @@ joicy init /path/to/repository
 
 This creates:
 - `.joicy/` directory structure
-- `config.toml` configuration file
-- `memory/` directory for storage
+- `.joicy/joicy.toml` configuration (legacy `.joicy/config.toml` is still read if present)
+- `.joicy/memory/` for the SQLite database
 
 ### Search Memory Bank
 
@@ -153,12 +163,14 @@ joicy search "bug pattern"
 joicy search "authentication" --file src/auth.rs
 ```
 
-### Sync with Central
+### Sync with Central (not implemented yet)
 
 ```bash
-joicy sync
-joicy sync --force  # Force full sync
+joicy sync              # Exits with a message: team/central sync is out of scope for the local POC
+joicy sync --force
 ```
+
+Use **git** (and a shared Obsidian vault path if you want human-readable notes) for collaboration until central sync ships.
 
 ### Check Status
 

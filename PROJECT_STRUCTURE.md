@@ -11,46 +11,39 @@ This document describes the project structure, feature flags, and testing organi
 
 ```
 joicy/
-├── src/                    # Source code
-│   ├── lib.rs             # Library entry point
-│   ├── main.rs            # CLI binary entry point
-│   ├── cli/               # CLI module
-│   │   ├── mod.rs
-│   │   ├── parser.rs      # CLI argument parsing
-│   │   └── commands.rs    # Command implementations
-│   ├── config/            # Configuration management
+├── src/
+│   ├── lib.rs
+│   ├── main.rs
+│   ├── automation/        # Post-commit: changelog, ticket stubs
 │   │   └── mod.rs
-│   ├── error.rs           # Error types
-│   ├── git/               # Git integration
+│   ├── cli/
 │   │   ├── mod.rs
-│   │   ├── hooks.rs       # Git hooks
-│   │   └── repository.rs  # Git repository operations
-│   ├── memory/            # Memory bank core
+│   │   ├── parser.rs
+│   │   └── commands.rs
+│   ├── config.rs          # App configuration (TOML)
+│   ├── error.rs
+│   ├── git/
 │   │   ├── mod.rs
-│   │   ├── bank.rs        # Memory bank implementation
-│   │   └── storage.rs     # Storage backends
-│   ├── mcp/               # MCP server
+│   │   ├── hooks.rs       # Hook install + templates
+│   │   └── capture.rs     # `git` CLI capture for pipeline
+│   ├── memory/
 │   │   ├── mod.rs
-│   │   ├── server.rs      # MCP server
-│   │   └── tools.rs        # MCP tools
-│   ├── sync/              # Sync service
+│   │   ├── bank.rs
+│   │   └── storage.rs     # SQLite+FTS5 (default); Qdrant stub behind feature
+│   ├── mcp/
 │   │   ├── mod.rs
-│   │   ├── service.rs     # Sync service
-│   │   └── http.rs         # HTTP sync client
-│   └── utils/             # Utility functions
-│       └── mod.rs
-├── tests/                 # Integration tests
-│   └── integration_test.rs
-├── tests/                 # System tests
-│   └── system/
-│       ├── mod.rs
-│       ├── cli_tests.rs
-│       ├── memory_bank_tests.rs
-│       └── sync_tests.rs
-├── Cargo.toml             # Cargo configuration
-├── README.md              # Project readme
-├── ROADMAP.md             # Development roadmap
-└── PROJECT_STRUCTURE.md   # This file
+│   │   └── serve.rs       # MCP tools (rmcp)
+│   ├── utils/
+│   │   └── mod.rs
+│   ├── vault_markdown.rs  # Obsidian-friendly markdown export
+│   └── workspace.rs       # Repo root, config discovery, bank open
+├── tests/
+│   ├── integration_test.rs
+│   └── system_test.rs     # Subprocess CLI + git hook smoke tests
+├── Cargo.toml
+├── README.md
+├── ROADMAP.md
+└── PROJECT_STRUCTURE.md
 ```
 
 ## Feature Flags
@@ -68,7 +61,7 @@ Joicy uses Cargo feature flags to enable/disable functionality. This allows for:
 
 ### Storage Backends
 
-- **`storage-sqlite`**: SQLite with vector extension
+- **`storage-sqlite`**: SQLite with FTS5 full-text index (default local backend)
 - **`storage-qdrant`**: Qdrant vector database
 - **`storage-chroma`**: Chroma vector database
 
@@ -152,20 +145,11 @@ cargo test --test integration_test
 
 ### System Tests
 
-System tests are end-to-end tests that verify the entire system:
+End-to-end tests spawn the real `joicy` binary (`CARGO_BIN_EXE_joicy`) and a temporary git repo:
 
 ```bash
-# Run all system tests
-cargo test --test system -- --ignored
-
-# Run specific system test
-cargo test --test system cli_tests::test_cli_init -- --ignored
+cargo test --test system_test
 ```
-
-System tests are marked with `#[ignore]` by default because they:
-- May require external dependencies
-- May be slower
-- May require setup/teardown
 
 ## Module Organization
 
@@ -183,21 +167,18 @@ Core memory bank functionality:
 
 ### Git Module (`src/git/`)
 
-Git integration:
-- `hooks.rs`: Git hook installation and handling
-- `repository.rs`: Git repository operations
+- `hooks.rs`: Install post-commit hook (embeds path to current `joicy` binary)
+- `capture.rs`: Read `git` CLI output for commit metadata and pipeline
 
 ### MCP Module (`src/mcp/`)
 
-Model Context Protocol server:
-- `server.rs`: MCP server implementation
-- `tools.rs`: MCP tools for memory bank access
+- `serve.rs`: MCP server and tools (`memory_search`, `memory_store`, `memory_changelog`, `memory_vault_note`)
 
-### Sync Module (`src/sync/`)
+### Automation (`src/automation/`)
 
-Synchronization with central memory bank:
-- `service.rs`: Sync service
-- `http.rs`: HTTP client for central API
+- Changelog append, ticket stub paths, helpers used by `joicy automation on-commit`
+
+Team/central sync is not implemented as a `src/sync/` module; optional `sync-http` / `sync-grpc` feature flags exist for future work.
 
 ## Development Workflow
 
@@ -232,8 +213,7 @@ cargo test --lib
 # Integration tests only
 cargo test --test integration_test
 
-# System tests (ignored by default)
-cargo test --test system -- --ignored
+cargo test --test system_test
 
 # With specific features
 cargo test --features storage-sqlite

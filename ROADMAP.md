@@ -7,33 +7,39 @@
 
 This roadmap outlines the development plan for Joicy, from initial MVP to full enterprise features. The project is organized into phases, with each phase building upon the previous one.
 
+## Status (April 2026): local developer POC
+
+The **single-machine local POC** described in recent work is **implemented**: SQLite + FTS5 memory, Obsidian vault export, four-step post-commit automation (capture → vault → changelog → ticket stub), git hooks using the `git` CLI, subprocess **system tests**, and MCP tools (`memory_search`, `memory_store`, `memory_changelog`, `memory_vault_note` with optional stable `file_stem`). **Not in this POC**: central `joicy sync`, remote team sync, embedding/semantic search on the default path, and production Qdrant/Chroma wiring (stubs / feature flags only).
+
+Phase checklists below are the original plan; treat Phase 0 items as partially complete where they overlap with the bullets above.
+
 ## Phase 0: Foundation & MVP (Months 1-2)
 
 **Goal:** Build a working prototype that demonstrates core value proposition
 
 ### Core Components
-- [ ] **CLI Tool (Rust)**
-  - [ ] Basic command structure (`init`, `status`, `version`)
-  - [ ] Configuration management
-  - [ ] Local file-based storage (simple start)
-  
-- [ ] **Local Memory Bank**
+- [x] **CLI Tool (Rust)** (local POC)
+  - [x] Basic command structure (`init`, `status`, `search`, `add`, `vault`, `changelog`, `hooks`, `automation`, `mcp`, `sync` stub)
+  - [x] Configuration management (`.joicy/joicy.toml`, legacy `config.toml`)
+  - [x] Local SQLite + FTS5 storage (default)
+
+- [ ] **Local Memory Bank** (full vision)
   - [ ] Embed code snippets using local embedding model
-  - [ ] Simple vector storage (start with SQLite + vector extension)
-  - [ ] Basic search functionality
-  - [ ] Metadata indexing (file path, language, timestamp)
+  - [ ] Vector storage (Qdrant/Chroma; stubs only today)
+  - [x] Basic **full-text** search (FTS5)
+  - [x] Metadata indexing (file path, language, timestamp)
 
-- [ ] **Git Integration**
-  - [ ] Pre-commit hook installation
-  - [ ] Code diff extraction
-  - [ ] Automatic context storage on commit
-  - [ ] Pattern detection (basic similarity search)
+- [x] **Git Integration** (local POC)
+  - [x] **Post-commit** hook installation (`joicy hooks install`)
+  - [x] Commit metadata + capture pipeline (`git` CLI)
+  - [x] Automatic storage on commit (SQLite + vault + changelog + ticket stub)
+  - [ ] Pattern detection (similarity beyond FTS)
 
-- [ ] **MCP Server (Basic)**
-  - [ ] MCP protocol implementation
-  - [ ] Memory bank query tool
-  - [ ] Memory bank store tool
-  - [ ] Integration with Cline/Copilot
+- [x] **MCP Server (Basic)** (local POC)
+  - [x] MCP protocol (rmcp)
+  - [x] Memory bank query / store tools
+  - [x] Changelog + vault note tools
+  - [ ] Deeper IDE integration (file-scoped context, etc.)
 
 ### Success Criteria
 - Developer can initialize memory bank

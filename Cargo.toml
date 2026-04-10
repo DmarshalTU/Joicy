@@ -16,15 +16,16 @@ name = "joicy"
 path = "src/main.rs"
 
 [features]
-default = ["cli", "mcp", "git"]
+default = ["cli", "mcp", "git", "storage-sqlite"]
 
 # Core features
 cli = ["clap", "tracing", "tracing-subscriber"]
-mcp = ["serde", "serde_json", "tokio"]
-git = ["git2", "walkdir"]
+mcp = ["dep:serde", "dep:serde_json", "tokio", "dep:rmcp", "dep:schemars"]
+# Git capture + hooks use the `git` CLI only (no libgit2 in the default build).
+git = []
 
 # Storage backends
-storage-sqlite = ["rusqlite"]
+storage-sqlite = ["rusqlite", "dep:serde_json", "dep:serde"]
 storage-qdrant = ["qdrant-client", "tonic"]
 storage-chroma = []
 
@@ -53,10 +54,6 @@ tokio = { version = "1.35", features = ["full"], optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
 serde_json = { version = "1.0", optional = true }
 
-# Git integration
-git2 = { version = "0.18", optional = true }
-walkdir = { version = "2.4", optional = true }
-
 # Storage
 rusqlite = { version = "0.31", features = ["bundled"], optional = true }
 qdrant-client = { version = "1.7", optional = true }
@@ -75,6 +72,15 @@ thiserror = "1.0"
 dirs = "5.0"
 config = "0.14"
 toml = "0.9.10"
+
+# MCP (optional; pulled in via `mcp` feature)
+rmcp = { version = "1.4", optional = true, features = [
+    "server",
+    "transport-io",
+    "macros",
+    "schemars",
+] }
+schemars = { version = "1.2", optional = true }
 
 [dev-dependencies]
 # Testing

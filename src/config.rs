@@ -5,12 +5,88 @@ use config::{Config, Environment, File};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
+/// Markdown vault / Obsidian export settings (dimension 2).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VaultConfig {
+    /// Shared vault root for Obsidian (same path in every repo = one vault with namespaces).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub export_root: Option<PathBuf>,
+    /// Subfolder name under `export_root` (default: repository directory name).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub namespace: Option<String>,
+    /// After each automated capture, refresh markdown files under the vault root.
+    #[serde(default = "default_vault_auto_export")]
+    pub auto_export: bool,
+}
+
+fn default_vault_auto_export() -> bool {
+    true
+}
+
+/// Local post-commit pipeline (SQLite + vault + changelog + ticket notes).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AutomationConfig {
+    /// Append a line to the repo changelog on each commit (step 3 of 4).
+    #[serde(default = "default_automation_changelog")]
+    pub changelog_on_commit: bool,
+    /// Changelog file relative to repo root (default `CHANGELOG.md`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub changelog_path: Option<PathBuf>,
+    /// Write a short Obsidian-friendly stub under the vault namespace (step 4 of 4).
+    #[serde(default = "default_automation_ticket")]
+    pub ticket_note_on_commit: bool,
+    /// Subfolder under the vault namespace for ticket stubs, e.g. `tickets/`.
+    #[serde(default = "default_ticket_vault_subdir")]
+    pub ticket_vault_subdir: String,
+}
+
+fn default_automation_changelog() -> bool {
+    true
+}
+
+fn default_automation_ticket() -> bool {
+    true
+}
+
+fn default_ticket_vault_subdir() -> String {
+    "tickets".to_string()
+}
+
+impl Default for AutomationConfig {
+    fn default() -> Self {
+        Self {
+            changelog_on_commit: default_automation_changelog(),
+            changelog_path: None,
+            ticket_note_on_commit: default_automation_ticket(),
+            ticket_vault_subdir: default_ticket_vault_subdir(),
+        }
+    }
+}
+
+impl Default for VaultConfig {
+    fn default() -> Self {
+        Self {
+            export_root: None,
+            namespace: None,
+            auto_export: true,
+        }
+    }
+}
+
 /// Application configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
     /// Memory bank configuration
     pub memory: MemoryConfig,
-    
+
+    /// Vault export defaults (Obsidian). Can be overridden with `JOICY_VAULT_ROOT`.
+    #[serde(default)]
+    pub vault: VaultConfig,
+
+    /// Post-commit automation (changelog + ticket stubs alongside memory + vault).
+    #[serde(default)]
+    pub automation: AutomationConfig,
+
     /// Git integration configuration
     #[cfg(feature = "git")]
     pub git: GitConfig,
@@ -127,6 +203,8 @@ impl Default for AppConfig {
                     ttl: 3600,
                 },
             },
+            vault: VaultConfig::default(),
+            automation: AutomationConfig::default(),
             #[cfg(feature = "git")]
             git: GitConfig {
                 enable_hooks: true,

@@ -6,14 +6,16 @@
 #![warn(missing_docs)]
 #![warn(clippy::all)]
 
+pub mod automation;
 pub mod cli;
 pub mod config;
 pub mod error;
 pub mod git;
 pub mod memory;
 pub mod mcp;
-pub mod sync;
 pub mod utils;
+pub mod vault_markdown;
+pub mod workspace;
 
 // Re-export commonly used types
 pub use error::{Error, Result};
